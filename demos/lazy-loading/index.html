@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>lazy-loading — demo</title>
+  <meta name="description" content="Interactive demo: lazy-load images with the IntersectionObserver API.">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20rx='22'%20fill='%230a0e14'/%3E%3Ctext%20x='13'%20y='71'%20font-family='monospace'%20font-size='54'%20font-weight='bold'%20fill='%234ade80'%3E%26gt;_%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../demo.css">
+  <style>
+    .ll-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:18px; }
+    .ll-card { border:1px solid var(--border); border-radius:13px; overflow:hidden; background:var(--panel); }
+    .ll-frame { position:relative; aspect-ratio:5/3; background:var(--panel-2); overflow:hidden; }
+    .ll-frame img { width:100%; height:100%; object-fit:cover; opacity:0; transform:scale(1.04);
+      transition:opacity .6s ease, transform .6s ease; display:block; }
+    .ll-frame img.loaded { opacity:1; transform:none; }
+    .ll-skel { position:absolute; inset:0; background:
+      linear-gradient(90deg, var(--panel-2) 0%, color-mix(in srgb,var(--text) 8%,var(--panel-2)) 50%, var(--panel-2) 100%);
+      background-size:200% 100%; animation:shimmer 1.4s infinite; }
+    .ll-frame.done .ll-skel { display:none; }
+    @keyframes shimmer { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+    .ll-meta { display:flex; justify-content:space-between; padding:10px 13px; font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--text-dim); }
+    .ll-meta .state { color:var(--text-faint); }
+    .ll-meta .state.on { color:var(--accent); }
+    .hud { position:sticky; top:70px; z-index:5; display:flex; flex-wrap:wrap; gap:14px; align-items:center;
+      margin-bottom:22px; padding:12px 16px; border:1px solid var(--border); border-radius:12px;
+      background:color-mix(in srgb,var(--panel) 86%,transparent); backdrop-filter:blur(8px); }
+    .hud .count { font-family:"JetBrains Mono",monospace; font-weight:700; color:var(--accent); }
+    .hud .barwrap { flex:1; min-width:140px; height:8px; border-radius:99px; background:var(--panel-2); overflow:hidden; }
+    .hud .bar { height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .4s; }
+    .hud .log { font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--text-dim); min-width:180px; }
+  </style>
+  <script>
+    (function(){try{var q=new URLSearchParams(location.search).get('theme');var t=(q==='light'||q==='dark')?q:localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+  </script>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <header class="demo-top">
+    <div class="wrap">
+      <a class="back" href="../../index.html#projects">← portfolio</a>
+      <div class="demo-id">
+        <span class="brand-mark">&gt;_</span>
+        <h1>lazy-loading</h1>
+        <span class="badge">interactive demo</span>
+      </div>
+      <div class="demo-actions">
+        <a class="btn btn-primary" href="https://github.com/rogeroliveira84/lazy-loading" target="_blank" rel="noopener">View source ↗</a>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle colour theme">
+          <svg class="ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="demo-main">
+    <div class="wrap">
+      <div class="lead-row">
+        <h2>Lazy loading with <code>IntersectionObserver</code></h2>
+        <p>Scroll down — each image stays a shimmering skeleton until it enters the viewport, then fetches and fades in. The HUD tracks what has loaded.</p>
+      </div>
+      <p class="note"><span class="prompt">i</span><span>Images only start downloading as they approach the screen — open your network tab and watch them appear on scroll. Source: <a href="https://github.com/rogeroliveira84/lazy-loading" target="_blank" rel="noopener">View source</a>.</span></p>
+
+      <div class="hud">
+        <span><span class="count" id="count">0</span> / <span id="total">0</span> loaded</span>
+        <span class="barwrap"><span class="bar" id="bar"></span></span>
+        <span class="log" id="log">→ waiting to scroll…</span>
+      </div>
+
+      <div class="ll-grid" id="grid"></div>
+    </div>
+  </main>
+
+  <footer class="demo-foot">
+    <div class="wrap">
+      <span>© <span id="year">2026</span> Roger · lazy-loading demo</span>
+      <a href="../../index.html#projects">← all projects</a>
+    </div>
+  </footer>
+
+  <script src="../demo.js" defer></script>
+  <script>
+    (function () {
+      var N = 18;
+      var grid = document.getElementById("grid");
+      var countEl = document.getElementById("count");
+      var totalEl = document.getElementById("total");
+      var barEl = document.getElementById("bar");
+      var logEl = document.getElementById("log");
+      var loaded = 0;
+      totalEl.textContent = N;
+
+      for (var i = 1; i <= N; i++) {
+        var card = document.createElement("div");
+        card.className = "ll-card";
+        var n = i;
+        card.innerHTML =
+          '<div class="ll-frame"><span class="ll-skel"></span>' +
+          '<img alt="Lazy demo image ' + n + '" data-src="https://picsum.photos/seed/rfd' + n + '/520/312"></div>' +
+          '<div class="ll-meta"><span>image_' + (n < 10 ? "0" + n : n) + '.jpg</span><span class="state">queued</span></div>';
+        grid.appendChild(card);
+      }
+
+      var frames = grid.querySelectorAll(".ll-frame");
+
+      function load(frame) {
+        var img = frame.querySelector("img");
+        var state = frame.parentElement.querySelector(".state");
+        if (img.dataset.loading || img.classList.contains("loaded")) return;
+        img.dataset.loading = "1";
+        state.textContent = "loading…";
+        img.onload = function () {
+          img.classList.add("loaded");
+          frame.classList.add("done");
+          state.textContent = "loaded ✓";
+          state.classList.add("on");
+          loaded++;
+          countEl.textContent = loaded;
+          barEl.style.width = (loaded / N * 100) + "%";
+          logEl.textContent = "→ loaded image #" + loaded;
+        };
+        img.onerror = function () { state.textContent = "error"; };
+        img.src = img.dataset.src;
+      }
+
+      if (!("IntersectionObserver" in window)) {
+        frames.forEach(load);
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { load(e.target); io.unobserve(e.target); }
+        });
+      }, { rootMargin: "120px 0px", threshold: 0.05 });
+      frames.forEach(function (f) { io.observe(f); });
+    })();
+  </script>
+</body>
+</html>

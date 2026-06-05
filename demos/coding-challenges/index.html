@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>coding-challenges — demo</title>
+  <meta name="description" content="Interactive demo: run classic coding challenges in the browser.">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20rx='22'%20fill='%230a0e14'/%3E%3Ctext%20x='13'%20y='71'%20font-family='monospace'%20font-size='54'%20font-weight='bold'%20fill='%234ade80'%3E%26gt;_%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../demo.css">
+  <style>
+    .ch-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:20px; }
+    .challenge { display:flex; flex-direction:column; }
+    .challenge .panel-body { display:flex; flex-direction:column; gap:12px; flex:1; }
+    .challenge h3 { margin:0; font-size:14px; font-weight:700; color:var(--text); }
+    .challenge .desc { margin:0; font-size:13px; color:var(--text-dim); }
+    .challenge .inputs { display:flex; gap:8px; flex-wrap:wrap; }
+    .challenge .inputs input { flex:1; min-width:90px; }
+    .challenge .run { align-self:flex-start; }
+  </style>
+  <script>
+    (function(){try{var q=new URLSearchParams(location.search).get('theme');var t=(q==='light'||q==='dark')?q:localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+  </script>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <header class="demo-top">
+    <div class="wrap">
+      <a class="back" href="../../index.html#projects">← portfolio</a>
+      <div class="demo-id">
+        <span class="brand-mark">&gt;_</span>
+        <h1>coding-challenges</h1>
+        <span class="badge">interactive demo</span>
+      </div>
+      <div class="demo-actions">
+        <a class="btn btn-primary" href="https://github.com/rogeroliveira84/coding-challenges" target="_blank" rel="noopener">View source ↗</a>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle colour theme">
+          <svg class="ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="demo-main">
+    <div class="wrap">
+      <div class="lead-row">
+        <h2>Classic challenges, runnable in the browser</h2>
+        <p>A taste of the repo — each card runs a real implementation against your input. Tweak the values and hit <b>Run</b>.</p>
+      </div>
+      <p class="note"><span class="prompt">i</span><span>A handful of the challenges, wired up live. The full collection (in React/TypeScript) is in the <b>repo</b>: <a href="https://github.com/rogeroliveira84/coding-challenges" target="_blank" rel="noopener">View source</a>.</span></p>
+
+      <div class="ch-grid" id="grid"></div>
+    </div>
+  </main>
+
+  <footer class="demo-foot">
+    <div class="wrap">
+      <span>© <span id="year">2026</span> Roger · coding-challenges demo</span>
+      <a href="../../index.html#projects">← all projects</a>
+    </div>
+  </footer>
+
+  <script src="../demo.js" defer></script>
+  <script>
+    (function () {
+      // Real implementations
+      function fizzbuzz(n) {
+        var out = [];
+        for (var i = 1; i <= n; i++)
+          out.push(i % 15 === 0 ? "FizzBuzz" : i % 3 === 0 ? "Fizz" : i % 5 === 0 ? "Buzz" : i);
+        return out.join(", ");
+      }
+      function isPalindrome(s) {
+        var c = String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
+        return c === c.split("").reverse().join("") ? "true — it's a palindrome" : "false";
+      }
+      function twoSum(arr, target) {
+        var seen = {};
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i] !== undefined && seen[target - arr[i]] !== undefined) return "[" + seen[target - arr[i]] + ", " + i + "]";
+          seen[arr[i]] = i;
+        }
+        return "no pair found";
+      }
+      function fib(n) {
+        if (n < 0) return "n must be >= 0";
+        var a = 0, b = 1;
+        for (var i = 0; i < n; i++) { var t = a + b; a = b; b = t; }
+        return String(a);
+      }
+      function anagram(a, b) {
+        var norm = function (s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, "").split("").sort().join(""); };
+        return norm(a) === norm(b) ? "true — they're anagrams" : "false";
+      }
+
+      var CHALLENGES = [
+        {
+          title: "FizzBuzz", desc: "Numbers 1..n; multiples of 3 → Fizz, 5 → Buzz, both → FizzBuzz.",
+          inputs: [{ ph: "n", val: "15" }],
+          code: "for (let i=1; i<=n; i++)\n  out.push(i%15===0?'FizzBuzz'\n    :i%3===0?'Fizz':i%5===0?'Buzz':i)",
+          run: function (v) { return fizzbuzz(Math.min(parseInt(v[0], 10) || 0, 100)); }
+        },
+        {
+          title: "Palindrome", desc: "Ignores case and punctuation.",
+          inputs: [{ ph: "text", val: "A man, a plan, a canal: Panama" }],
+          code: "c = s.toLowerCase().replace(/[^a-z0-9]/g,'')\nreturn c === [...c].reverse().join('')",
+          run: function (v) { return isPalindrome(v[0]); }
+        },
+        {
+          title: "Two Sum", desc: "Indices of the two numbers adding to target. O(n) with a hash map.",
+          inputs: [{ ph: "array e.g. 2,7,11,15", val: "2,7,11,15" }, { ph: "target", val: "9" }],
+          code: "if (seen[target-arr[i]] != null)\n  return [seen[target-arr[i]], i]\nseen[arr[i]] = i",
+          run: function (v) {
+            var arr = v[0].split(",").map(function (x) { return Number(x.trim()); });
+            return twoSum(arr, Number(v[1]));
+          }
+        },
+        {
+          title: "Fibonacci", desc: "Iterative nth Fibonacci number.",
+          inputs: [{ ph: "n", val: "10" }],
+          code: "let [a,b]=[0,1]\nfor (let i=0;i<n;i++) [a,b]=[b,a+b]\nreturn a",
+          run: function (v) { return fib(parseInt(v[0], 10)); }
+        },
+        {
+          title: "Anagram check", desc: "Are two strings anagrams of each other?",
+          inputs: [{ ph: "word A", val: "listen" }, { ph: "word B", val: "silent" }],
+          code: "norm = s => [...s.toLowerCase()\n  .replace(/[^a-z0-9]/g,'')].sort().join('')\nreturn norm(a) === norm(b)",
+          run: function (v) { return anagram(v[0], v[1]); }
+        }
+      ];
+
+      var grid = document.getElementById("grid");
+      CHALLENGES.forEach(function (c) {
+        var card = document.createElement("div");
+        card.className = "panel challenge";
+        var inputsHtml = c.inputs.map(function (inp) {
+          return '<input type="text" placeholder="' + inp.ph + '" value="' + inp.val.replace(/"/g, "&quot;") + '">';
+        }).join("");
+        card.innerHTML =
+          '<div class="panel-head"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="panel-title">' + c.title.toLowerCase().replace(/\s/g, "_") + '.js</span></div>' +
+          '<div class="panel-body">' +
+            '<h3>' + c.title + '</h3>' +
+            '<p class="desc">' + c.desc + '</p>' +
+            '<code class="code">' + c.code + '</code>' +
+            '<div class="inputs">' + inputsHtml + '</div>' +
+            '<button class="btn btn-primary run" type="button">▶ Run</button>' +
+            '<div class="out empty">// output</div>' +
+          '</div>';
+        var btn = card.querySelector(".run");
+        var ins = card.querySelectorAll(".inputs input");
+        var outEl = card.querySelector(".out");
+        btn.addEventListener("click", function () {
+          var vals = Array.prototype.map.call(ins, function (i) { return i.value; });
+          try {
+            outEl.textContent = "→ " + c.run(vals);
+            outEl.classList.remove("empty");
+          } catch (e) {
+            outEl.textContent = "✗ " + e.message;
+            outEl.classList.remove("empty");
+          }
+        });
+        grid.appendChild(card);
+      });
+    })();
+  </script>
+</body>
+</html>

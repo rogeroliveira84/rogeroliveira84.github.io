@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>behaviour-radar — demo</title>
+  <meta name="description" content="Interactive demo: detect habits, sequences and anomalies from an event stream.">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20rx='22'%20fill='%230a0e14'/%3E%3Ctext%20x='13'%20y='71'%20font-family='monospace'%20font-size='54'%20font-weight='bold'%20fill='%234ade80'%3E%26gt;_%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../demo.css">
+  <style>
+    .actions { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+    .ev-btn { padding:9px 14px; border-radius:10px; border:1px solid var(--border); background:var(--bg-soft);
+      color:var(--text); font-family:"JetBrains Mono",monospace; font-size:13px; cursor:pointer;
+      transition:transform .1s, border-color .15s, background .15s; }
+    .ev-btn:hover { border-color:color-mix(in srgb,var(--accent) 45%,var(--border)); }
+    .ev-btn:active { transform:scale(.94); background:color-mix(in srgb,var(--accent) 14%,var(--bg-soft)); }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+    .stream { height:150px; overflow:auto; padding:12px 14px; border-radius:10px; background:var(--bg-soft);
+      border:1px solid var(--border-soft); font-family:"JetBrains Mono",monospace; font-size:12.5px; line-height:1.7; }
+    .stream .t { color:var(--text-faint); }
+    .stream .a { color:var(--accent); }
+    .metric { margin-bottom:18px; }
+    .metric h4 { margin:0 0 9px; font-family:"JetBrains Mono",monospace; font-size:12.5px; font-weight:600;
+      color:var(--text-dim); text-transform:lowercase; letter-spacing:.4px; }
+    .bars { display:flex; flex-direction:column; gap:7px; }
+    .bars .row { display:grid; grid-template-columns:84px 1fr 34px; align-items:center; gap:10px; font-family:"JetBrains Mono",monospace; font-size:12px; }
+    .bars .track { height:9px; border-radius:99px; background:var(--panel-2); overflow:hidden; }
+    .bars .fill { height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .4s; }
+    .bars .n { text-align:right; color:var(--text-dim); }
+    .insight { padding:11px 14px; border-radius:10px; border:1px solid var(--border-soft); background:var(--bg-soft);
+      font-size:13px; margin-bottom:9px; }
+    .insight .k { font-family:"JetBrains Mono",monospace; color:var(--accent-3); }
+    .insight.anom { border-color:color-mix(in srgb,var(--err) 40%,var(--border)); }
+    .insight.anom .k { color:var(--err); }
+    .muted { color:var(--text-faint); }
+  </style>
+  <script>
+    (function(){try{var q=new URLSearchParams(location.search).get('theme');var t=(q==='light'||q==='dark')?q:localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+  </script>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <header class="demo-top">
+    <div class="wrap">
+      <a class="back" href="../../index.html#projects">← portfolio</a>
+      <div class="demo-id">
+        <span class="brand-mark">&gt;_</span>
+        <h1>behaviour-radar</h1>
+        <span class="badge">interactive demo</span>
+      </div>
+      <div class="demo-actions">
+        <a class="btn btn-primary" href="https://github.com/rogeroliveira84/behaviour-radar" target="_blank" rel="noopener">View source ↗</a>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle colour theme">
+          <svg class="ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="demo-main">
+    <div class="wrap">
+      <div class="lead-row">
+        <h2>Read habits &amp; anomalies from an event stream</h2>
+        <p>Fire some actions (or auto-simulate). The radar reads the raw event log and surfaces what repeats, the most common habit, and bursts that look unusual — all in real time.</p>
+      </div>
+      <p class="note"><span class="prompt">i</span><span>A representative demo of the idea behind the library — frequencies, sequence (bi-gram) habits and burst anomalies from plain events. Source: <a href="https://github.com/rogeroliveira84/behaviour-radar" target="_blank" rel="noopener">View source</a>.</span></p>
+
+      <section class="stage">
+        <div class="panel">
+          <div class="panel-head"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="panel-title">emit events</span></div>
+          <div class="panel-body">
+            <div class="actions" id="actions"></div>
+            <div class="toolbar">
+              <button class="btn" id="sim" type="button">▶ Auto-simulate</button>
+              <button class="btn" id="reset" type="button">⟲ Reset</button>
+            </div>
+            <div class="stream" id="stream"><span class="muted">// event log — newest at top</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="panel-title">radar — <span id="evcount">0</span> events</span></div>
+          <div class="panel-body">
+            <div class="metric">
+              <h4>action frequency</h4>
+              <div class="bars" id="freq"><p class="muted" style="font-size:13px;margin:0">No data yet — emit some events.</p></div>
+            </div>
+            <div class="metric">
+              <h4>detected habit</h4>
+              <div id="habit"><p class="insight muted" style="margin:0">Waiting for a repeated sequence…</p></div>
+            </div>
+            <div class="metric">
+              <h4>anomalies</h4>
+              <div id="anom"><p class="insight muted" style="margin:0">Nothing unusual so far.</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="demo-foot">
+    <div class="wrap">
+      <span>© <span id="year">2026</span> Roger · behaviour-radar demo</span>
+      <a href="../../index.html#projects">← all projects</a>
+    </div>
+  </footer>
+
+  <script src="../demo.js" defer></script>
+  <script>
+    (function () {
+      var ACTIONS = ["view", "click", "scroll", "search", "buy"];
+      var events = [];
+      var startT = Date.now();
+
+      var actionsEl = document.getElementById("actions");
+      var streamEl = document.getElementById("stream");
+      var freqEl = document.getElementById("freq");
+      var habitEl = document.getElementById("habit");
+      var anomEl = document.getElementById("anom");
+      var countEl = document.getElementById("evcount");
+
+      ACTIONS.forEach(function (a) {
+        var b = document.createElement("button");
+        b.className = "ev-btn";
+        b.type = "button";
+        b.textContent = a;
+        b.addEventListener("click", function () { emit(a); });
+        actionsEl.appendChild(b);
+      });
+
+      function emit(action) {
+        var t = Date.now() - startT;
+        events.push({ action: action, t: t });
+        var line = document.createElement("div");
+        line.innerHTML = '<span class="t">' + String(t).padStart(5, "0") + 'ms</span>  <span class="a">' + action + '</span>';
+        if (streamEl.firstChild && streamEl.firstChild.className === "muted") streamEl.innerHTML = "";
+        streamEl.insertBefore(line, streamEl.firstChild);
+        analyze();
+      }
+
+      function analyze() {
+        countEl.textContent = events.length;
+
+        // frequency
+        var freq = {};
+        ACTIONS.forEach(function (a) { freq[a] = 0; });
+        events.forEach(function (e) { freq[e.action]++; });
+        var max = Math.max.apply(null, ACTIONS.map(function (a) { return freq[a]; })) || 1;
+        freqEl.innerHTML = ACTIONS.map(function (a) {
+          var w = (freq[a] / max * 100) || 0;
+          return '<div class="row"><span>' + a + '</span><span class="track"><span class="fill" style="width:' + w + '%"></span></span><span class="n">' + freq[a] + '</span></div>';
+        }).join("");
+
+        // habit = most common consecutive pair (bi-gram)
+        var pairs = {};
+        for (var i = 1; i < events.length; i++) {
+          var key = events[i - 1].action + " → " + events[i].action;
+          pairs[key] = (pairs[key] || 0) + 1;
+        }
+        var bestPair = null, bestN = 0;
+        Object.keys(pairs).forEach(function (k) { if (pairs[k] > bestN) { bestN = pairs[k]; bestPair = k; } });
+        if (bestPair && bestN >= 2) {
+          habitEl.innerHTML = '<div class="insight">Repeats <span class="k">' + bestPair + '</span> &nbsp;·&nbsp; seen <b>' + bestN + '×</b></div>';
+        } else {
+          habitEl.innerHTML = '<p class="insight muted" style="margin:0">Waiting for a repeated sequence…</p>';
+        }
+
+        // anomalies: rapid bursts (>=4 events within 800ms) + rare actions
+        var out = [];
+        for (var j = 3; j < events.length; j++) {
+          if (events[j].t - events[j - 3].t < 800) {
+            out.push('<div class="insight anom">Burst detected: <span class="k">4 events in &lt; 800ms</span> around ' + events[j].t + 'ms</div>');
+            break;
+          }
+        }
+        if (events.length >= 8) {
+          ACTIONS.forEach(function (a) {
+            var share = freq[a] / events.length;
+            if (freq[a] > 0 && share < 0.08) {
+              out.push('<div class="insight anom">Rare action <span class="k">' + a + '</span> &nbsp;·&nbsp; only ' + Math.round(share * 100) + '% of activity</div>');
+            }
+          });
+        }
+        anomEl.innerHTML = out.length ? out.join("") : '<p class="insight muted" style="margin:0">Nothing unusual so far.</p>';
+      }
+
+      // auto-simulate a realistic stream with a baked-in habit (view → click)
+      var simTimer = null;
+      document.getElementById("sim").addEventListener("click", function () {
+        if (simTimer) { clearInterval(simTimer); simTimer = null; this.textContent = "▶ Auto-simulate"; return; }
+        this.textContent = "⏸ Stop";
+        var script = ["view", "click", "view", "click", "scroll", "view", "click", "search", "view", "click", "buy", "scroll"];
+        var k = 0;
+        simTimer = setInterval(function () {
+          emit(script[k % script.length]);
+          k++;
+          if (k > 26) { clearInterval(simTimer); simTimer = null; document.getElementById("sim").textContent = "▶ Auto-simulate"; }
+        }, 220);
+      });
+
+      document.getElementById("reset").addEventListener("click", function () {
+        if (simTimer) { clearInterval(simTimer); simTimer = null; document.getElementById("sim").textContent = "▶ Auto-simulate"; }
+        events = []; startT = Date.now();
+        streamEl.innerHTML = '<span class="muted">// event log — newest at top</span>';
+        countEl.textContent = "0";
+        freqEl.innerHTML = '<p class="muted" style="font-size:13px;margin:0">No data yet — emit some events.</p>';
+        habitEl.innerHTML = '<p class="insight muted" style="margin:0">Waiting for a repeated sequence…</p>';
+        anomEl.innerHTML = '<p class="insight muted" style="margin:0">Nothing unusual so far.</p>';
+      });
+    })();
+  </script>
+</body>
+</html>

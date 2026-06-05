@@ -1,56 +1,182 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Roger — Senior JavaScript Engineer</title>
+  <meta name="description" content="Roger — Senior JavaScript Engineer (React · TypeScript) based in Sydney, Australia. Selected open-source projects.">
+  <meta property="og:title" content="Roger — Senior JavaScript Engineer">
+  <meta property="og:description" content="React · TypeScript · Node.js — selected open-source work.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#0a0e14">
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Crect%20width='100'%20height='100'%20rx='22'%20fill='%230a0e14'/%3E%3Ctext%20x='13'%20y='71'%20font-family='monospace'%20font-size='54'%20font-weight='bold'%20fill='%234ade80'%3E%26gt;_%3C/text%3E%3C/svg%3E">
 
-    <title>Roger Oliveira Projects by rogeroliveira84</title>
-  </head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <body>
+  <link rel="stylesheet" href="stylesheets/portfolio.css">
 
-    <header>
-      <div class="container">
-        <h1>Roger Oliveira Projects</h1>
-        <h2></h2>
+  <script>
+    // Set theme before paint to avoid a flash of the wrong colours.
+    (function () {
+      try {
+        var q = new URLSearchParams(window.location.search).get('theme');
+        var t = (q === 'light' || q === 'dark') ? q : localStorage.getItem('theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</head>
 
-        <section id="downloads">
-          <a href="https://github.com/rogeroliveira84" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-grain" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Roger — home">
+      <span class="brand-mark">&gt;_</span>
+      <span class="brand-text">roger<span class="brand-dim">@portfolio</span>:~$</span>
+    </a>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle colour theme">
+      <svg class="ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+      <svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+    </button>
+  </header>
+
+  <main id="top">
+
+    <!-- ░░ HERO ░░ -->
+    <section class="hero" id="hero">
+      <div class="hero-intro reveal">
+        <p class="eyebrow"><span class="prompt">$</span> ./introduce<span class="caret-inline"></span></p>
+        <h1 class="name">Roger</h1>
+        <p class="subtitle">Senior JavaScript Engineer <span class="sub-sep">·</span> React &amp; TypeScript</p>
+        <nav class="cta" aria-label="Contact links">
+          <a class="btn btn-primary" href="https://github.com/rogeroliveira84" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12 11.5 11.5 0 0 0 8.4 23c.6.1.8-.26.8-.57v-2c-3.2.7-3.9-1.37-3.9-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.7.08-.7 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.4-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.47.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.5 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.75.82 1.2 1.85 1.2 3.11 0 4.43-2.7 5.41-5.28 5.69.41.36.78 1.05.78 2.12v3.14c0 .31.21.68.81.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>
+            GitHub
+          </a>
+          <a class="btn" href="https://www.linkedin.com/in/rogeroliveira/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14ZM7.12 20.45H3.55V9h3.57v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>
+            LinkedIn
+          </a>
+        </nav>
       </div>
-    </header>
 
-    <div class="container">
-      <section id="main_content">
-        <h3>
-<a id="welcome-to-my-page" class="anchor" href="#welcome-to-my-page" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to my page!</h3>
-<p>My current projects:</p>
+      <div class="term reveal" role="img" aria-label="Terminal window summarising Roger's profile">
+        <div class="term-bar">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+          <span class="term-title">roger@sydney — zsh</span>
+        </div>
+        <div class="term-body">
+          <p class="line"><span class="prompt">$</span> whoami</p>
+          <p class="line out">roger</p>
+          <p class="line"><span class="prompt">$</span> cat role.txt</p>
+          <p class="line out accent typed-line"><span class="typed" data-roles='["Senior JavaScript Engineer","React &amp; TypeScript Specialist","UI &amp; Tooling Builder"]'>Senior JavaScript Engineer</span><span class="caret"></span></p>
+          <p class="line"><span class="prompt">$</span> cat about.txt</p>
+          <p class="line out cmt">I build dynamic, config-driven UIs with React</p>
+          <p class="line out cmt">&amp; TypeScript — from reusable component</p>
+          <p class="line out cmt">libraries to small, focused developer tools.</p>
+          <p class="line"><span class="prompt">$</span> stack --list</p>
+          <p class="line term-tags">
+            <span class="ttag">React</span><span class="ttag">TypeScript</span><span class="ttag">JavaScript</span><span class="ttag">Node.js</span><span class="ttag">Redux</span><span class="ttag">Jest</span><span class="ttag">HTML5</span><span class="ttag">CSS3</span><span class="ttag">REST</span><span class="ttag">Git</span>
+          </p>
+          <p class="line"><span class="prompt">$</span> location</p>
+          <p class="line out">Sydney, Australia <span class="flag">🇦🇺</span></p>
+          <p class="line"><span class="prompt">$</span> <span class="caret caret-block"></span></p>
+        </div>
+      </div>
+    </section>
 
-<p><a href="https://github.com/rogeroliveira84/bootstrap-datepicker-buttons">bootstrap-datepicker-buttons</a>
-It is a extend plugin for bootstrap-datepicker which creates buttons to select specific periods of dates.</p>
+    <!-- ░░ PROJECTS ░░ -->
+    <section class="projects" id="projects">
+      <h2 class="section-head reveal"><span class="prompt">$</span> ls ~/projects</h2>
+      <p class="section-sub reveal">Selected open-source work. Star counts refresh live from GitHub.</p>
 
-<p style="margin-top:30px"></p>
-<h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+      <ul class="grid">
+        <li class="card reveal" style="--i:0">
+          <div class="card-top">
+            <h3 class="card-name">react-dynamic-forms</h3>
+            <span class="stars" title="GitHub stars">★&nbsp;<span class="star-count" data-repo="react-dynamic-forms">13</span></span>
+          </div>
+          <p class="card-desc">A React component that builds fully dynamic forms from a single <code>config.json</code> — fields, validation and layout, with no boilerplate.</p>
+          <div class="card-foot">
+            <span class="lang"><span class="lang-dot lang-ts"></span>TypeScript</span>
+            <span class="card-links">
+              <a href="demos/react-dynamic-forms/">Demo ↗</a>
+              <a href="https://github.com/rogeroliveira84/react-dynamic-forms" target="_blank" rel="noopener">Repo →</a>
+            </span>
+          </div>
+        </li>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="https://help.github.com/pages">https://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
+        <li class="card reveal" style="--i:1">
+          <div class="card-top">
+            <h3 class="card-name">behaviour-radar</h3>
+            <span class="stars" title="GitHub stars">★&nbsp;<span class="star-count" data-repo="behaviour-radar">2</span></span>
+          </div>
+          <p class="card-desc">A small JavaScript library that surfaces repeated actions, user habits and unusual behaviour from plain event data.</p>
+          <div class="card-foot">
+            <span class="lang"><span class="lang-dot lang-js"></span>JavaScript</span>
+            <span class="card-links">
+              <a href="demos/behaviour-radar/">Demo ↗</a>
+              <a href="https://github.com/rogeroliveira84/behaviour-radar" target="_blank" rel="noopener">Repo →</a>
+            </span>
+          </div>
+        </li>
+
+        <li class="card reveal" style="--i:2">
+          <div class="card-top">
+            <h3 class="card-name">coding-challenges</h3>
+            <span class="stars" title="GitHub stars">★&nbsp;<span class="star-count" data-repo="coding-challenges">1</span></span>
+          </div>
+          <p class="card-desc">Clean, readable implementations of the most common coding challenges, written in React and TypeScript.</p>
+          <div class="card-foot">
+            <span class="lang"><span class="lang-dot lang-ts"></span>TypeScript</span>
+            <span class="card-links">
+              <a href="demos/coding-challenges/">Demo ↗</a>
+              <a href="https://github.com/rogeroliveira84/coding-challenges" target="_blank" rel="noopener">Repo →</a>
+            </span>
+          </div>
+        </li>
+
+        <li class="card reveal" style="--i:3">
+          <div class="card-top">
+            <h3 class="card-name">lazy-loading</h3>
+            <span class="stars" title="GitHub stars">★&nbsp;<span class="star-count" data-repo="lazy-loading">1</span></span>
+          </div>
+          <p class="card-desc">A minimal vanilla-JS demo of lazy loading images and content with the IntersectionObserver API.</p>
+          <div class="card-foot">
+            <span class="lang"><span class="lang-dot lang-js"></span>JavaScript</span>
+            <span class="card-links">
+              <a href="demos/lazy-loading/">Demo ↗</a>
+              <a href="https://github.com/rogeroliveira84/lazy-loading" target="_blank" rel="noopener">Repo →</a>
+            </span>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="foot-line"><span class="prompt">$</span> echo "Thanks for visiting"</p>
+    <div class="foot-row">
+      <span class="foot-copy">© <span id="year">2026</span> Roger · Sydney, Australia</span>
+      <span class="foot-links">
+        <a href="https://github.com/rogeroliveira84" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/rogeroliveira/" target="_blank" rel="noopener">LinkedIn</a>
+      </span>
     </div>
+  </footer>
 
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-64220749-1");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
-
-  </body>
+  <script src="javascripts/portfolio.js" defer></script>
+</body>
 </html>
